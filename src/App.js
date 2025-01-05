@@ -7,8 +7,7 @@ import ProtectedRoute from './routes/ProtectedRoute.jsx';
 
 const RedirectToDashboardOrLogin = () => {
   const { user } = useAuth();
-  console.log('user', user)
-  return user ? <Navigate to="/home" /> : <Navigate to="/login" />;
+  return (user.user_login) ? <Navigate to="/home" /> : <Navigate to="/login" />;
 };
 
 const App = () => {
@@ -20,9 +19,12 @@ const App = () => {
         <Routes>
           <Route path="/" element={<RedirectToDashboardOrLogin />} />
 
-          <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+          <Route path="/home/*" element={<ProtectedRoute><HomePage /></ProtectedRoute>}>
+            {/* Nested routes under /home */}
+            <Route path="user" element={<div>USER</div>} />
+          </Route>
 
-          <Route path="*" element={<>404</>} />
+          <Route path="*" element={<div>404</div>} />
 
           <Route path="/login" element={<Login />} />
         </Routes>

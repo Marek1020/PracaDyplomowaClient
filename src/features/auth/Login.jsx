@@ -23,8 +23,13 @@ const Login = () => {
       });
 
       if (response.ok) {
-        setUser("admin");
+
+        const data = await response.json();
+        const { w_id, user_login } = data.data;
+
+        setUser({ w_id, user_login });
         navigate("/home");
+
       } else {
         const errorData = await response.json();
         alert('błedne dane logowania')

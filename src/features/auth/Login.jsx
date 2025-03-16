@@ -23,16 +23,14 @@ const Login = () => {
       });
 
       if (response.ok) {
-
         const data = await response.json();
         const { w_id, user_login } = data.data;
 
         setUser({ w_id, user_login });
         navigate("/home");
-
       } else {
         const errorData = await response.json();
-        alert('błedne dane logowania')
+        alert("błedne dane logowania");
       }
     } catch (err) {
       setError("An error occurred. Please try again later.");
@@ -56,7 +54,10 @@ const Login = () => {
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="login" className="block text-sm/6 font-medium text-gray-900">
+              <label
+                htmlFor="login"
+                className="block text-sm/6 font-medium text-gray-900"
+              >
                 Login
               </label>
               <div className="mt-2">
@@ -73,7 +74,10 @@ const Login = () => {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900">
+              <label
+                htmlFor="password"
+                className="block text-sm/6 font-medium text-gray-900"
+              >
                 Hasło
               </label>
               <div className="mt-2">

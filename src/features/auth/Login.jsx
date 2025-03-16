@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../../context/authContext";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import logoImage from "../../assets/images/logo.png";
 
 const Login = () => {
   const [login, setLogin] = useState("");
@@ -43,7 +44,7 @@ const Login = () => {
         <div className="sm:mx-auto sm:w-full sm:max-w-sm -mt-24">
           <img
             alt="Your Company"
-            src={`https://placehold.co/80x80`}
+            src={logoImage}
             className="mx-auto h-20 w-auto"
           />
           <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">

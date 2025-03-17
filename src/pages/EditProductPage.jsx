@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import Alert from "../components/Alert";
 
 const fetchProductAndCategories = async (id) => {
   try {
@@ -19,9 +20,11 @@ const fetchProductAndCategories = async (id) => {
       product: {
         name: productData?.data[0]["wh_product.name"] || "",
         description: productData?.data[0]["wh_product.description"] || "",
-        price: productData?.data[0]["wh_product.unit_price"] || "",
-        quantity: productData?.data[0]["wh_product.stock_amount"] || "",
-        category: productData?.data[0]["wh_category.category"] || "",
+        price: productData?.data[0]["wh_product.unit_price"] || 0,
+        quantity: productData?.data[0]["wh_product.stock_amount"] || 0,
+        min_quantity: productData?.data[0]["wh_product.min_stock_amount"] || 0,
+        max_quantity: productData?.data[0]["wh_product.max_stock_amount"] || 0,
+        category: productData?.data[0]["wh_category.w_id"] || "",
       },
       categories: categoryData?.data || [],
     };
@@ -33,21 +36,21 @@ const fetchProductAndCategories = async (id) => {
 
 const EditProductPage = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
 
   const [product, setProduct] = useState({
     name: "",
     description: "",
-    price: "",
-    quantity: "",
+    price: 0,
+    quantity: 0,
+    min_quantity: 0,
+    max_quantity: 0,
     category: "",
   });
 
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [alert, setAlert] = useState({ type: "", message: "" });
 
-  // Fetch data
   const dbQuery = useCallback(async () => {
     setLoading(true);
     const { product, categories } = await fetchProductAndCategories(id);
@@ -57,102 +60,84 @@ const EditProductPage = () => {
   }, [id]);
 
   useEffect(() => {
-    dbQuery().catch(setError);
+    dbQuery().catch((error) => console.error(error));
   }, [dbQuery]);
 
   const handleChange = (e) => {
+    const { name, value, type } = e.target;
     setProduct((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: type === "number" ? Number(value) : value,
     }));
   };
 
-  const handleSave = async () => {
-    console.log("save data");
+  const saveProductData = async () => {
+    try {
+      const response = await fetch(`http://localhost:3001/v1/products/${id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(product),
+      });
+
+      if (!response.ok) {
+        throw new Error("Błąd podczas edycji danych");
+      }
+
+      setAlert({ type: "success", message: "Dane zostały zapisane poprawnie" });
+    } catch (error) {
+      setAlert({ type: "error", message: "Błąd podczas edycji danych." });
+    }
   };
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 border border-gray-300 bg-white">
-      <h1 className="text-2xl font-semibold mb-4 text-center">
-        Edytuj Produkt
-      </h1>
-
-      {error && (
-        <p className="text-red-500 text-center">Błąd: {error.message}</p>
-      )}
+      <h1 className="text-md font-semibold mb-4">Edycja produktu</h1>
+      <Alert alert={alert} />
       {loading ? (
         <p className="text-center">Ładowanie danych...</p>
       ) : (
         <div className="space-y-4">
           {[
-            {
-              label: "Nazwa produktu",
-              name: "name",
-              type: "text",
-              placeholder: "Nazwa produktu",
-            },
-            {
-              label: "Opis produktu",
-              name: "description",
-              type: "text",
-              placeholder: "Opis produktu",
-            },
-            {
-              label: "Cena produktu",
-              name: "price",
-              type: "text",
-              placeholder: "Cena produktu",
-            },
-            {
-              label: "Ilość produktu",
-              name: "quantity",
-              type: "text",
-              placeholder: "Ilość produktu",
-            },
-          ].map(({ label, name, type, placeholder }) => (
+            "name",
+            "description",
+            "price",
+            "quantity",
+            "min_quantity",
+            "max_quantity",
+          ].map((field) => (
             <FormInput
-              key={name}
-              label={label}
-              name={name}
-              type={type}
-              placeholder={placeholder}
-              value={product[name]}
+              key={field}
+              label={field.replace("_", " ").toUpperCase()}
+              name={field}
+              type={typeof product[field] === "number" ? "number" : "text"}
+              value={product[field]}
               onChange={handleChange}
             />
           ))}
 
-          <div>
-            <label className="block mb-1 font-medium" htmlFor="category">
-              Kategoria produktu
-            </label>
-            <select
-              id="category"
-              name="category"
-              value={product.category}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-2"
-            >
-              <option value="" disabled hidden>
-                Wybierz kategorię
+          <label className="block mb-1 font-medium text-xs" htmlFor="category">
+            Kategoria produktu
+          </label>
+          <select
+            id="category"
+            name="category"
+            value={product.category}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded px-3 py-2"
+          >
+            <option value="" disabled hidden>
+              Wybierz kategorię
+            </option>
+            {categories.map(({ w_id, category }) => (
+              <option key={w_id} value={w_id}>
+                {category}
               </option>
-              {categories.length > 0 ? (
-                categories.map((val) => (
-                  <option key={val.category} value={val.category}>
-                    {val.category}
-                  </option>
-                ))
-              ) : (
-                <option value="0" disabled>
-                  Ładowanie...
-                </option>
-              )}
-            </select>
-          </div>
+            ))}
+          </select>
         </div>
       )}
-
       <button
-        onClick={handleSave}
+        onClick={saveProductData}
         className="mt-6 w-full bg-[#fb8500] text-white py-2"
         disabled={loading}
       >
@@ -162,17 +147,16 @@ const EditProductPage = () => {
   );
 };
 
-const FormInput = ({ label, name, type, placeholder, value, onChange }) => (
+const FormInput = ({ label, name, type, value, onChange }) => (
   <div>
-    <label className="block mb-1 font-medium" htmlFor={name}>
+    <label className="block mb-1 font-medium text-xs" htmlFor={name}>
       {label}
     </label>
     <input
       type={type}
       id={name}
       name={name}
-      placeholder={placeholder}
-      value={value || ""}
+      value={value}
       onChange={onChange}
       className="w-full border border-gray-300 rounded px-3 py-2"
     />

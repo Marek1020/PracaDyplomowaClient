@@ -11,10 +11,15 @@ import HomePage from "./pages/HomePage";
 import ProtectedRoute from "./routes/ProtectedRoute.jsx";
 import ProductPage from "./pages/ProductPage.jsx";
 import EditProductPage from "./pages/EditProductPage.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
 
 const RedirectToDashboardOrLogin = () => {
   const { user } = useAuth();
-  return user.user_login ? <Navigate to="/home" /> : <Navigate to="/login" />;
+  return user.user_login ? (
+    <Navigate to="/home/dashboard" />
+  ) : (
+    <Navigate to="/login" />
+  );
 };
 
 const App = () => {
@@ -32,6 +37,8 @@ const App = () => {
               </ProtectedRoute>
             }
           >
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="home" element={<Dashboard />} />
             <Route path="user" element={<div>USER</div>} />
             <Route path="products" element={<ProductPage />} />
             <Route path="products/edit/:id" element={<EditProductPage />} />

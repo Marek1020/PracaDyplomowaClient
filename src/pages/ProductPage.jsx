@@ -24,13 +24,16 @@ const ProductPage = () => {
   }, [user]);
 
   return (
-    <DataTable value={products ? products : [{}]}>
-      <Column field="wh_category.category" header="Kategoria" />
-      <Column field="wh_product.name" header="Nazwa" />
-      <Column field="wh_product.description" header="Opis" />
-      <Column field="wh_product.stock_amount" header="Ilość detaliczna" />
-      <Column field="wh_product.unit_price" header="Cena jednostkowa" />
-    </DataTable>
+    <div className="">
+      <span className="pb-12 block text-lg font-semibold">Lista produktów</span>
+      <DataTable value={products ? products : [{}]}>
+        <Column field="wh_category.category" header="Kategoria" />
+        <Column field="wh_product.name" header="Nazwa" />
+        <Column field="wh_product.description" header="Opis" />
+        <Column field="wh_product.stock_amount" header="Ilość detaliczna" />
+        <Column field="wh_product.unit_price" header="Cena jednostkowa" />
+      </DataTable>
+    </div>
   );
 };
 

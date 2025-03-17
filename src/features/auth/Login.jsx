@@ -28,7 +28,7 @@ const Login = () => {
         const { w_id, user_login } = data.data;
 
         setUser({ w_id, user_login });
-        navigate("/home");
+        navigate("/home/dashboard");
       } else {
         const errorData = await response.json();
         alert("błedne dane logowania");

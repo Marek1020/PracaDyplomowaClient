@@ -31,7 +31,9 @@ const DataTable = ({ value, children }) => {
                 key={column.props.field}
                 className="px-4 py-2 text-sm h-[50px]"
                 onClick={() => {
-                  navigate(`edit/${item?.["wh_product.w_id"] || -1}`);
+                  navigate(
+                    `/home/products/edit/${item?.["wh_product.w_id"] || -1}`
+                  );
                 }}
               >
                 {item[column.props.field]

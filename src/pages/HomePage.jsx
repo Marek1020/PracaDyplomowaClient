@@ -5,7 +5,7 @@ import { useAuth } from "../context/authContext";
 const HomePage = () => {
   const { user } = useAuth();
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center">
+    <div className="min-h-screen  flex flex-col items-center">
       {/* Header */}
       <header className="w-full bg-[#023047] p-6 text-white shadow-md sticky top-0">
         <div className="container mx-auto">
@@ -15,27 +15,14 @@ const HomePage = () => {
               <ul className="flex space-x-4">
                 <li>
                   <Link to="/" className="hover:underline">
-                    Home
+                    Raport produktów
                   </Link>
                 </li>
                 <li>
                   <Link to="products" className="hover:underline">
-                    Produkty
+                    Lista produktów
                   </Link>
                 </li>
-                {user ? (
-                  <li>
-                    <Link to="user" className="hover:underline">
-                      Profil
-                    </Link>
-                  </li>
-                ) : (
-                  <li>
-                    <Link to="/login" className="hover:underline">
-                      Login
-                    </Link>
-                  </li>
-                )}
               </ul>
             </nav>
           </div>
